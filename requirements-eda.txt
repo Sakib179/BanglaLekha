@@ -1,0 +1,8 @@
+# Use these packages in the existing macOS .venv and in the Docker image.
+numpy>=1.26,<3
+pandas>=2.2,<4
+matplotlib>=3.8,<4
+Pillow>=10,<13
+tqdm>=4.66,<5
+ipykernel>=6.29,<8
+jupyterlab>=4.2,<5

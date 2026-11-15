@@ -1,0 +1,73 @@
+# macOS metadata
+.DS_Store
+._*
+.Spotlight-V100/
+.Trashes/
+
+# Python caches and test/tool output
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Virtual environments and local secrets
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+
+# Jupyter temporary files; keep the actual notebooks trackable
+.ipynb_checkpoints/
+.ipython/
+
+# Local datasets
+/BanglaLekha-Isolated/
+/word_dataset/
+/data/
+/datasets/
+
+# Generated EDA reports, training runs and caches
+/reports/
+/training_runs/
+/outputs/
+/cache/
+mlruns/
+mlartifacts/
+mlflow.db
+mlflow.db-*
+mlflow.sqlite*
+
+# Model weights and binary array caches
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+*.h5
+*.hdf5
+*.npy
+*.npz
+
+# Dataset downloads and exported archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+
+# Logs and temporary/editor files
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~

@@ -1,0 +1,11 @@
+# Install into the existing Python work/.venv; no new environment is needed.
+-r requirements-eda.txt
+
+# uv resolves torchvision together with its matching torch version.
+torch>=2.5,<3
+torchvision>=0.20,<1
+scikit-learn>=1.5,<2
+regex>=2024.11.6
+
+# The 2.x file-store API keeps local experiment tracking simple.
+mlflow-skinny==2.22.5
