@@ -300,3 +300,93 @@ python -m mlflow ui --backend-store-uri ./training_runs/macos_resnet18_efficient
 Open `http://127.0.0.1:5000`. Change the path in that command if you changed the experiment name. [MLflow tracking](https://mlflow.org/docs/latest/ml/tracking/)
 
 The Docker guide's EDA image remains focused on EDA. When you choose to containerize training yourself, change its dependency file to `requirements-training.txt` and include `requirements-eda.txt` before installing it, since the training requirements reference that file. Container training in the provided setup will use CPU.
+
+## 15. Segmentation prototype using the saved ResNet-18
+
+Open `03_segmentation_prototype.ipynb` from this project folder using your existing `.venv` kernel. Install `requirements-segmentation.txt` into that environment if dependencies are missing. Run the cells in order; the training notebook does not need to run again. CPU inference loads `training_runs/macos_resnet18_efficientnetb0_v1/character/resnet18/best_model.pt` without training or downloading weights.
+
+The notebook proposes character cuts, classifies crops, and displays a **joined Bangla word** above the segmentation preview. Set `IMAGE_PATH` to your drawing in section 6. `labels.json` supplies the original 84 class IDs; its references are in `label_sources.json`. The optional class gallery and controlled check use local BanglaLekha images. PromitoLipi examples are optional. Predictions, diagnostic figures and any evaluation CSV go into `reports/segmentation_prototype/`.
+
+To reuse the same predictor later:
+
+```python
+from segmentation_ocr import load_engine, predict_word
+
+engine = load_engine(
+    'training_runs/macos_resnet18_efficientnetb0_v1/character/resnet18/best_model.pt',
+    'labels.json',
+)
+
+result = predict_word(engine, 'my_word.png')
+print(result['word'])
+```
+
+This is an experimental segmentation baseline. It uses geometry hypotheses for **া** and **ু**; the character classifier has no separately trained dependent-vowel classes. It uses no dictionary, forced target words, or PromitoLipi XML labels. Its score is uncalibrated and is **not word accuracy**. `�` marks low-confidence segments, and high-confidence mistakes are also possible.
+
+The controlled **জল** check assembles two isolated samples with spacing; it tests software integration, not natural handwriting recognition. Real PromitoLipi examples include successes and failures. Recognition of new drawings of **মানুষ** and **জল** still needs evaluation. Section 8 accepts your independently labeled CSV with `path,expected` columns and reports every prediction plus exact word accuracy. Relative image paths resolve from the CSV's folder. Keep evaluation drawings separate from samples used to tune rules.
+
+Run the focused checks without training:
+
+```bash
+python -m unittest discover -s tests -p 'test_segmentation_prototype.py' -v
+```
+
+The notebook includes small, commented function cells for learning; `segmentation_ocr.py` contains the matching reusable implementation. If changing the algorithm later, update both copies.
+
+## 16. Frozen ResNet with learned vowel-sign recognition
+
+Open `04_hybrid_word_recognition.ipynb` using **Python Work (.venv)**. This notebook runs inference only and does not rerun either training notebook. Its code cells are short; the reusable algorithms are commented in `hybrid_ocr.py` and the evaluation functions are in `hybrid_evaluation.py`.
+
+The two model roles are separate:
+
+- Your saved BanglaLekha ResNet-18 supplies every base-character or supported-conjunct prediction.
+- A frozen external Bengali.AI model supplies eleven vowel decisions: no sign plus **া ি ী ু ূ ৃ ে ৈ ো ৌ**. Its root and consonant outputs are removed from the inference model.
+- The decoder compares character cuts, merged grapheme regions and conditional base crops, then assembles the **joined word**. It uses no answer dictionary or expected transcript, and has no external whole-word fallback.
+
+Install the small extra dependencies in your existing environment if needed:
+
+```bash
+uv pip install --python "../../.venv/bin/python" -r requirements-hybrid.txt
+```
+
+Keras runs with the existing PyTorch backend; TensorFlow and another environment are unnecessary. The extra dependencies have already been installed locally during verification. The notebook downloads the helper checkpoint and class map once into `models/vowel_helper/` (about 43 MB), checks pinned SHA-256 hashes, and reuses those files offline. The original helper weights remain bit-for-bit identical; compatibility changes concern obsolete configuration fields only.
+
+Run the new notebook in order. Set `IMAGE_PATH` near the top and rerun the custom-prediction cell for each new drawing. The output shows the complete word, full-grapheme boxes, actual ResNet crops, base/vowel scores, alternatives and end-to-end CPU time. Change the input path without reloading either model.
+
+The notebook reuses predictions for unchanged images across its preview and evaluation cells. Changing input bytes, model objects or settings invalidates this session cache. Reported inference time is the original computation time for that image, not the cache-lookup time. The reusable predictor itself does not cache results.
+
+For later application integration:
+
+```python
+from hybrid_ocr import load_hybrid_engine, predict_word
+
+engine = load_hybrid_engine(
+    'training_runs/macos_resnet18_efficientnetb0_v1/character/resnet18/best_model.pt',
+)
+
+result = predict_word(engine, 'my_word.png')
+print(result['word'])
+print(result['status'])
+```
+
+`word` is the best joined candidate. `accepted_word` is `None` when the configured evidence thresholds or candidate margin fail. An `accepted` status is a heuristic decision, **not calibrated proof of correctness**; confident mistakes remain possible. Weak dependent-sign hypotheses are suppressed by the documented settings. The helper cannot add base classes outside your ResNet's 84-class inventory.
+
+Eligible complete paths are preferred over paths containing weak character evidence; the alternative table marks this eligibility explicitly. Adaptive matra and middle-zone proposals help separate letters above a long lower vowel sign. The search includes lower-sign crops down to 40% of the original grapheme height and small boundary refinements, while retaining original pixels for both classifiers. These remain image-processing hypotheses rather than newly trained segmentation weights.
+
+Reports are saved under `reports/hybrid_word_recognition/`. The supplied development CSV contains six visually transcribed PromitoLipi examples, including known failures. These images were inspected while implementing the rules, so their scores are **development diagnostics, not held-out accuracy**. Review their transcriptions before using the data in a report. The notebook explicitly separates this comparison from independent evaluation.
+
+Section 7 also runs four natural **মানুষ** examples from `examples/hybrid_manush_diagnostics.csv` and two **জল** crops from handwritten **গজল**. One of the four মানুষ samples was recognized correctly in local verification; the other three failed. Both derived জল crops were recognized correctly. These samples were inspected during debugging and are not held-out results. The cropped জল inputs are explicitly identified as derived crops. This implementation demonstrates the required joined-word path, but **does not establish reliable accuracy for arbitrary drawings; the assignment's word-accuracy requirement still needs independent verification**.
+
+For independent testing, make a UTF-8 CSV with `path,expected` columns; `examples/hybrid_test.example.csv` illustrates the format. Image paths resolve from the CSV folder. Set `TEST_CSV` in the notebook. Outputs include every word prediction/error, baseline comparison, exact raw word accuracy, accuracy counting rejected predictions as errors, code-point CER, aligned vowel errors, and latency. Include repeated natural drawings of **মানুষ** and **জল** and examples of every vowel sign. Without those drawings, their natural-input accuracy remains unverified.
+
+The helper source is [ifrit98/bengaliai](https://github.com/ifrit98/bengaliai); its exact revision, checksums, preprocessing references and original training dataset are recorded in `vowel_helper_sources.json`. The pinned upstream repository contains no LICENSE file, so this project downloads the original assets for local use and does not redistribute its code or weights. Keep the generated helper folder out of the source-only submission.
+
+The assignment explicitly requires BanglaLekha training and joined-word predictions. This hybrid retains that trained model in the actual prediction path and documents the additional pretrained component. It does not establish an accuracy guarantee or an instructor's interpretation of auxiliary-model use. Your existing training runs and checkpoints are unchanged.
+
+Run all inference checks in the same environment:
+
+```bash
+KERAS_BACKEND=torch python -m unittest discover -s tests -v
+```
+
+Checks include exact retained-helper-weight equality, frozen models, controlled word joining, changing ResNet outputs changing the result, absence of an external-root fallback, filenames not supplying answers, and CSV error accounting. Controlled samples are software checks and do not measure natural-word accuracy.

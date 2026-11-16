@@ -1,0 +1,14 @@
+{
+  "repository": "https://github.com/ifrit98/bengaliai",
+  "revision": "57263b0706c70033109160dcbb2ea3b382a7d827",
+  "checkpoint": "model-weights-best-checkpoint.h5",
+  "checkpoint_sha256": "9403fd7f8189a197f697188b6027ea204551d74b1e30bd1912bf2e4e3f9a7951",
+  "label_map": "csv/class_map.csv",
+  "label_map_sha256": "2e731b01424d19933778270f59085173ee40427da9a013cf2f2d2bc681ed51be",
+  "original_training_data": "Bengali.AI handwritten grapheme classification; not our BanglaLekha training run",
+  "used_output": "vowel: 11 classes, original zero-based class_map indices",
+  "ignored_outputs": ["grapheme_root", "consonant"],
+  "preprocessing_references": ["python/data_tools.py", "python/tfrecords/img_generator.py"],
+  "compatibility": "Remove obsolete serialization options only. Load every original weight strictly, freeze, and expose the vowel output alone.",
+  "redistribution": "No LICENSE file was present at this revision. Upstream code and weights are not redistributed in source submissions; the notebook downloads the original checkpoint for local use. Attribution does not grant redistribution rights."
+}

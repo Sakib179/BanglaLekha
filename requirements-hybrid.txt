@@ -1,0 +1,6 @@
+-r requirements-segmentation.txt
+
+# Keras uses the existing PyTorch runtime. TensorFlow is not required.
+keras==3.15.1
+h5py==3.16.0
+regex>=2024.11,<2028

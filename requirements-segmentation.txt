@@ -1,0 +1,8 @@
+# Install in the existing .venv. No MLflow or training libraries are needed here.
+torch>=2.5,<3
+torchvision>=0.20,<1
+opencv-python-headless>=4.10,<6
+numpy>=1.26,<3
+Pillow>=10,<14
+pandas>=2.2,<4
+matplotlib>=3.8,<4

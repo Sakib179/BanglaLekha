@@ -1,0 +1,7 @@
+{
+  "count": 200,
+  "seed": 20261117,
+  "source": "/Users/sakibsmacbookm5/Documents/Python work/research-project/SICIP - Assignment 4/Handwritten word/PromitoLipi A versatile offline dataset of handwritten Bangla words and paragraphs/PromitoLipi/PromitoLipi2.1",
+  "protocol": "Multi-component word images; exclude known development images, digits-only inputs and exact cropped-pixel duplicates.",
+  "references": "Blank pending independent transcription; XML IDs are not Unicode transcripts."
+}

@@ -1,0 +1,5 @@
+path,expected,purpose,label_source
+../Handwritten word/PromitoLipi A versatile offline dataset of handwritten Bangla words and paragraphs/PromitoLipi/PromitoLipi2.1/Word Images(bmp)/1971.bmp,মানুষ,target_diagnostic_not_heldout,Visually checked; used to debug segmentation
+../Handwritten word/PromitoLipi A versatile offline dataset of handwritten Bangla words and paragraphs/PromitoLipi/PromitoLipi2.1/Word Images(bmp)/1901.bmp,মানুষ,target_diagnostic_not_heldout,Visually checked; used to debug segmentation
+../Handwritten word/PromitoLipi A versatile offline dataset of handwritten Bangla words and paragraphs/PromitoLipi/PromitoLipi2.1/Word Images(bmp)/867.bmp,মানুষ,target_diagnostic_not_heldout,Visually checked; used to debug segmentation
+../Handwritten word/PromitoLipi A versatile offline dataset of handwritten Bangla words and paragraphs/PromitoLipi/PromitoLipi2.1/Word Images(bmp)/1013.bmp,মানুষ,target_diagnostic_not_heldout,Visually checked; used to debug segmentation

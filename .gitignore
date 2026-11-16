@@ -31,6 +31,7 @@ ENV/
 
 # Local datasets
 /BanglaLekha-Isolated/
+/Handwritten word/
 /word_dataset/
 /data/
 /datasets/
@@ -40,6 +41,7 @@ ENV/
 /training_runs/
 /outputs/
 /cache/
+/models/vowel_helper/
 mlruns/
 mlartifacts/
 mlflow.db

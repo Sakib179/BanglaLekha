@@ -1,0 +1,9 @@
+{
+  "dataset": "BanglaLekha-Isolated, original one-based folder IDs",
+  "model_index_rule": "class_id = model output index + 1",
+  "basic_and_digit_reference": "https://arxiv.org/html/1703.10661v1/Forms.jpg",
+  "dataset_paper": "https://arxiv.org/html/1703.10661",
+  "compound_reference": "https://www.frontiersin.org/journals/artificial-intelligence/articles/10.3389/frai.2026.1751148/full#T4",
+  "verification": "Compared the authors' collection form and examples from the local numbered folders; conjunct Unicode transcriptions follow the published Table 4. The notebook includes a visual label audit for review.",
+  "important": "This mapping is for BanglaLekha only. PromitoLipi XML numeric labels use a different inventory and must not be decoded with this file. Dependent vowel signs are handled by explicitly reported geometry rules, not additional trained classes."
+}
