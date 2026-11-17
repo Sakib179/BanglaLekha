@@ -1,0 +1,36 @@
+/* Paper, dark ink, and a restrained green accent. Fonts fall back to system fonts offline. */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600&display=swap');
+.stApp{background:#f6f7f4;font-family:'DM Sans',sans-serif}header[data-testid="stHeader"]{background:transparent}
+.block-container{max-width:1240px;padding:2rem 3rem 1rem}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:4px 0 24px;border-bottom:1px solid #dde3dc}
+.brand{display:flex;align-items:center;gap:12px;font-size:29px;font-weight:700;letter-spacing:-1px}
+.brand-mark{display:grid;place-items:center;width:39px;height:39px;background:#15735a;color:white;border-radius:12px;font-family:'Noto Sans Bengali',sans-serif;font-size:22px}
+.brand-dot{color:#15735a}.brand-divider{height:19px;width:1px;background:#d6ddd7;margin:0 6px}
+.brand-subtitle{font-size:10px;font-weight:600;letter-spacing:1.7px;color:#77837a}
+.model-pill{display:flex;align-items:center;gap:8px;border:1px solid #dce5da;background:#eef3eb;padding:8px 13px;font-size:11px;border-radius:30px;color:#42604d}
+.green-dot{width:6px;height:6px;background:#19805c;border-radius:50%}
+.hero{display:flex;justify-content:space-between;align-items:center;padding:46px 0 34px}
+.eyebrow{font-size:10px;letter-spacing:2px;font-weight:700;color:#7b8b7f}
+.hero h1{font-size:clamp(36px,4.5vw,59px);line-height:1.08;font-weight:600;letter-spacing:-2.8px;margin:16px 0;padding:0;color:#172c22}
+.hero h1 span{color:#197557}.hero p{font-size:14px;line-height:1.7;color:#7b877d;margin:0}
+.hero-art{width:265px;height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:50%;background:radial-gradient(ellipse,#e2eadb 0%,#f6f7f4 70%);transform:rotate(-7deg)}
+.hero-art span{font-family:'Noto Sans Bengali',sans-serif;font-size:70px;color:#458465;opacity:.65}
+.hero-art small{font-size:8px;letter-spacing:2.3px;color:#87977b;margin-top:12px}
+.section-heading{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.step-number{font-size:10px;color:#6b8371;background:#e9eee6;padding:5px 7px;border-radius:5px}
+.section-heading h2{font-size:17px;font-weight:600;letter-spacing:-.3px;margin:0;padding:0}
+[data-baseweb="tab-list"]{gap:22px;background:transparent;margin-bottom:8px}[data-baseweb="tab"]{font-size:12px;padding-left:0;padding-right:0}
+[data-baseweb="tab-highlight"]{background:#15735a;height:2px}.input-tip{font-size:11px;color:#8a958b;line-height:1.7;margin-top:10px}
+.result-card{background:#fff;border:1px solid #e1e7df;border-radius:16px;padding:25px;margin-top:13px;box-shadow:0 8px 30px #203c2605}
+.empty-result{min-height:335px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.result-symbol{display:grid;place-items:center;width:67px;height:67px;color:#90a896;font:36px 'Noto Sans Bengali',sans-serif;border:1px dashed #cddacb;background:#f7f9f5;border-radius:18px;margin-bottom:25px}
+.empty-result .eyebrow{font-size:8px;letter-spacing:1.4px}.empty-result h3{font-size:19px;font-weight:500;margin:12px 0 9px;padding:0}
+.empty-result p{font-size:12px;line-height:1.8;color:#8a968d;margin:0}.result-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.result-top .eyebrow{font-size:9px;letter-spacing:1.2px}.result-badge{padding:5px 8px;font-size:10px;border-radius:20px;white-space:nowrap}
+.ready{background:#eaf5eb;color:#357249}.review{background:#fbf1dc;color:#936c2d}
+.predicted-word{font-family:'Noto Sans Bengali',sans-serif;font-size:clamp(36px,5vw,68px);color:#17694f;padding:50px 0 36px;text-align:center;overflow-wrap:anywhere}
+.result-meta{display:flex;justify-content:space-between;border-top:1px solid #edf0eb;padding-top:15px;font-size:10px;color:#859187;gap:12px}
+.stDownloadButton button,.stButton button{border-radius:10px;font-size:12px}
+.footer{display:flex;justify-content:space-between;gap:20px;border-top:1px solid #dde3dc;margin-top:48px;padding:20px 0 7px;font-size:10px;color:#919b91}
+.footer-dot{margin:0 6px;color:#b3bdb1}
+@media(max-width:700px){.block-container{padding:1.5rem 1rem}.brand-subtitle,.brand-divider,.hero-art{display:none}.model-pill{font-size:9px;padding:6px 9px}.hero{padding:30px 0}.hero h1{letter-spacing:-1.5px}.footer{flex-direction:column;gap:8px;margin-top:24px}}

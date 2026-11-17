@@ -1,0 +1,3 @@
+# Inference server; notebook/training requirements remain separate.
+-r requirements-hybrid.txt
+streamlit>=1.45,<2

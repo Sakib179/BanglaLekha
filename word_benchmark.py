@@ -149,14 +149,14 @@ def _run_image(engine, image):
     return record
 
 
-def run_word_benchmark(engine, labels_csv, output_dir, count=200, progress=None):
+def run_word_benchmark(engine, labels_csv, output_dir, count=200, progress=None, max_new_predictions=None):
     """Save each prediction atomically. Reference edits never require rerunning inference."""
     labels_csv, output_dir = Path(labels_csv).resolve(), Path(output_dir)
     table = read_references(labels_csv, count)
     cache_dir = output_dir / 'predictions'
     cache_dir.mkdir(parents=True, exist_ok=True)
     signature = inference_signature(engine)
-    records, reused = [], 0
+    records, reused, new_count = [], 0, 0
     for row in table.itertuples(index=False):
         image = labels_csv.parent / row.path
         image_hash = hybrid_ocr.file_sha256(image) if image.is_file() else None
@@ -171,6 +171,7 @@ def run_word_benchmark(engine, labels_csv, output_dir, count=200, progress=None)
         else:
             result = _run_image(engine, image)
             atomic_json({'cache_stamp': stamp, 'result': result}, destination)
+            new_count += 1
         records.append({'test_id': str(row.test_id), 'path': row.path,
                         'prediction': result['word'], 'status': result['status'],
                         'latency_ms': result['latency_ms'], 'error': result.get('error', '')})
@@ -180,6 +181,12 @@ def run_word_benchmark(engine, labels_csv, output_dir, count=200, progress=None)
             atomic_json({'processed': len(records), 'total': count, 'reused': reused,
                          'inference_signature': signature}, output_dir / 'progress.json')
             pd.DataFrame(records).to_csv(output_dir / 'predictions.csv', index=False)
+        if max_new_predictions and new_count >= max_new_predictions and len(records) < count:
+            atomic_json({'processed': len(records), 'total': count, 'reused': reused,
+                         'inference_signature': signature}, output_dir / 'progress.json')
+            pd.DataFrame(records).to_csv(output_dir / 'predictions.csv', index=False)
+            return pd.DataFrame(records), {'processed': len(records), 'total': count,
+                                          'accuracy_status': 'inference_in_progress'}
     return score_word_benchmark(labels_csv, output_dir, count=count)
 
 
@@ -198,7 +205,7 @@ def score_word_benchmark(labels_csv, output_dir, count=200):
     results['prediction'] = results['prediction'].map(lambda s: unicodedata.normalize('NFC', str(s)))
     labeled = results['expected'].str.len().gt(0)
     reviewed = results.get('reference_verified', pd.Series('true', index=results.index))
-    reviewed = reviewed.astype(str).str.lower().isin(['true', '1', 'yes']) & labeled
+    reviewed = reviewed.astype(str).str.strip().str.lower().isin(['true', '1', 'yes']) & labeled
     ready = bool(reviewed.all())
     results['correct'] = results['prediction'].eq(results['expected']).where(reviewed, pd.NA)
     results['accepted_correct'] = (results['correct'] & results['status'].eq('accepted')).where(reviewed, pd.NA)

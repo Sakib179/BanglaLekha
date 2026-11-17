@@ -1,0 +1,68 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box}body{margin:0;font:12px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#52665a}
+.paper{position:relative;background:#fff;border:1px solid #dfe6dc;border-radius:13px;overflow:hidden}
+canvas{display:block;width:100%;aspect-ratio:2.2;touch-action:none;cursor:crosshair}
+.placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;color:#b4beb3;gap:11px}
+.placeholder strong{font-size:29px;font-weight:400;color:#a8b5a7}.placeholder span{font-size:11px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 0 15px;flex-wrap:wrap}
+.tools{display:flex;align-items:center;gap:5px}button{font:inherit;cursor:pointer;border:1px solid #dce4d8;border-radius:7px;padding:7px 10px;background:#fff;color:#607360}
+button:hover{border-color:#15735a;color:#15735a}button.active{background:#e8f0e5;color:#247150;border-color:#bad1bd}
+.brush{display:flex;align-items:center;gap:8px;font-size:10px;color:#8a9788}input{width:75px;accent-color:#15735a}
+.recognize{width:100%;background:#15735a;color:#fff;border:0;border-radius:9px;font-size:13px;padding:13px;font-weight:500}
+.recognize:hover{background:#105d49;color:#fff}.message{font-size:11px;color:#8b6936;margin:8px 0 0;min-height:15px}
+</style></head><body>
+<div class="paper"><canvas id="canvas" width="1056" height="480" aria-label="Draw one complete Bangla word" role="img"></canvas>
+<div class="placeholder" id="placeholder"><strong lang="bn">এখানে লিখুন</strong><span>Your canvas. Your handwriting.</span></div></div>
+<div class="toolbar"><div class="tools"><button id="pen" class="active" aria-label="Pen tool">✎ Pen</button>
+<button id="eraser" aria-label="Eraser tool">Eraser</button><button id="undo" aria-label="Undo last stroke">↶ Undo</button>
+<button id="clear" aria-label="Clear canvas">Clear</button></div>
+<label class="brush">Stroke <input id="brush" type="range" min="4" max="20" value="9" aria-label="Stroke width"></label></div>
+<button class="recognize" id="recognize">Recognize word &nbsp; →</button><div class="message" id="message" role="status"></div>
+<script>
+// Streamlit's component protocol avoids a separate React or canvas dependency.
+const send = (type, extra={}) => parent.postMessage({isStreamlitMessage:true,type,...extra}, '*');
+const canvas=document.getElementById('canvas'), ctx=canvas.getContext('2d');
+const placeholder=document.getElementById('placeholder'), message=document.getElementById('message');
+const strokes=[];
+let current=null, erasing=false;
+function point(event){
+  const box=canvas.getBoundingClientRect();
+  return {x:(event.clientX-box.left)*canvas.width/box.width,y:(event.clientY-box.top)*canvas.height/box.height};
+}
+function drawStroke(stroke){
+  ctx.strokeStyle=stroke.erase?'#ffffff':'#19251e';ctx.fillStyle=ctx.strokeStyle;
+  ctx.lineWidth=stroke.width;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();
+  const first=stroke.points[0];ctx.moveTo(first.x,first.y);
+  for(const p of stroke.points.slice(1))ctx.lineTo(p.x,p.y);
+  ctx.stroke();
+  if(stroke.points.length===1){ctx.beginPath();ctx.arc(first.x,first.y,stroke.width/2,0,Math.PI*2);ctx.fill();}
+}
+function redraw(){
+  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);
+  for(const stroke of strokes)drawStroke(stroke);
+  if(current)drawStroke(current);
+  placeholder.style.display=strokes.length||current?'none':'flex';
+}
+function setTool(erase){erasing=erase;document.getElementById('pen').classList.toggle('active',!erase);document.getElementById('eraser').classList.toggle('active',erase);}
+canvas.addEventListener('pointerdown',event=>{
+  event.preventDefault();canvas.setPointerCapture(event.pointerId);
+  const width=Number(document.getElementById('brush').value);
+  current={erase:erasing,width:erasing?width*3:width,points:[point(event)]};message.textContent='';redraw();
+});
+canvas.addEventListener('pointermove',event=>{if(current){current.points.push(point(event));redraw();}});
+function finish(){if(current){strokes.push(current);current=null;redraw();}}
+canvas.addEventListener('pointerup',finish);canvas.addEventListener('pointercancel',finish);
+document.getElementById('pen').onclick=()=>setTool(false);document.getElementById('eraser').onclick=()=>setTool(true);
+document.getElementById('undo').onclick=()=>{strokes.pop();redraw();};
+document.getElementById('clear').onclick=()=>{strokes.length=0;current=null;message.textContent='';redraw();};
+document.getElementById('recognize').onclick=()=>{
+  if(!strokes.some(s=>!s.erase)){message.textContent='Draw a word first, then select Recognize word.';return;}
+  message.textContent='Reading your word…';
+  send('streamlit:setComponentValue',{value:{image:canvas.toDataURL('image/png'),request_id:crypto.randomUUID()},dataType:'json'});
+};
+window.addEventListener('message',event=>{if(event.data.type==='streamlit:render')message.textContent='';});
+const resize=()=>send('streamlit:setFrameHeight',{height:document.body.scrollHeight+4});
+new ResizeObserver(resize).observe(document.body);
+redraw();send('streamlit:componentReady',{apiVersion:1});resize();
+</script></body></html>

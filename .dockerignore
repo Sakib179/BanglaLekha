@@ -1,9 +1,31 @@
+# Local environments and repository metadata
+.git/
 .venv/
 **/.venv/
-.git/
+.vscode/
+.env
+.env.*
 __pycache__/
-.ipynb_checkpoints/
-.DS_Store
+**/__pycache__/
+**/.ipynb_checkpoints/
+**/.pytest_cache/
+**/.DS_Store
+
+# Datasets and generated training outputs
 BanglaLekha-Isolated/
-*.zip
+Handwritten word/
+data/
+datasets/
+word_dataset/
+training_runs/
+artifacts/mlflow/
+mlruns/
+mlartifacts/
+cache/
 reports/
+models/
+*.zip
+*.tar
+*.tar.gz
+*.log
+*.tmp

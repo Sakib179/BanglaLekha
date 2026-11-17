@@ -73,3 +73,7 @@ mlflow.sqlite*
 *.swp
 *.swo
 *~
+
+/artifacts/mlflow/
+
+*.keras
